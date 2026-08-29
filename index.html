@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>EGO-META</title>
+<meta name="theme-color" content="#08080e">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+<!-- Backend 100 % local — aucune dépendance externe -->
+</head>
+<body>
+
+<!-- configWarning retiré — backend 100 % local, aucune config requise -->
+<div id="configWarning" class="hidden"></div>
+
+<!-- Announcement banner -->
+<div id="announcementBanner">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.5v5l4 2v-7Z"/></svg>
+  <span id="announcementText"></span>
+  <button id="announcementDismiss" title="Fermer">✕</button>
+</div>
+
+<!-- ══════════════════════════ AUTH SCREEN ══════════════════════════ -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <h1>EGO-META</h1>
+      <p>Ton monde RP, connecté.</p>
+    </div>
+
+    <div id="authError"></div>
+
+    <!-- OAuth -->
+    <div id="oauthBlock">
+      <div class="oauth-row">
+        <button type="button" class="btn btn-ghost" id="oauthGoogleBtn">
+          <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.71H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.71A5.4 5.4 0 0 1 3.68 9c0-.59.1-1.17.29-1.71V4.96H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.04l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.46 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.96l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+          Google
+        </button>
+        <button type="button" class="btn btn-ghost" id="oauthGithubBtn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </button>
+      </div>
+      <div class="auth-divider">ou</div>
+    </div>
+
+    <!-- Login -->
+    <div id="loginForm" class="auth-form">
+      <h2>Se connecter</h2>
+      <div class="field"><label>Email</label><input type="email" id="li_email" placeholder="toi@exemple.com" autocomplete="email"></div>
+      <div class="field"><label>Mot de passe</label><input type="password" id="li_password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn btn-primary btn-full" id="loginSubmitBtn">Se connecter</button>
+      <div class="auth-links">
+        <a href="#" id="showSignup">Créer un compte</a>
+        <a href="#" id="showForgot">Mot de passe oublié ?</a>
+      </div>
+    </div>
+
+    <!-- Signup -->
+    <div id="signupForm" class="auth-form hidden">
+      <h2>Créer un compte</h2>
+      <div class="field"><label>Code d'invitation</label><input type="text" id="su_invite" placeholder="Reçu d'un membre d'EGO-META"></div>
+      <div class="field"><label>Pseudo (unique)</label><input type="text" id="su_username" placeholder="ex: nancy_rp" autocomplete="username"></div>
+      <div class="field"><label>Nom affiché</label><input type="text" id="su_displayname" placeholder="ex: Nancy"></div>
+      <div class="field"><label>Email</label><input type="email" id="su_email" placeholder="toi@exemple.com" autocomplete="email"></div>
+      <div class="field"><label>Mot de passe (8 car. min.)</label><input type="password" id="su_password" placeholder="••••••••" autocomplete="new-password"></div>
+      <button class="btn btn-primary btn-full" id="signupSubmitBtn">Créer mon compte</button>
+      <div class="auth-links"><a href="#" id="showLogin1">Déjà un compte ?</a></div>
+    </div>
+
+    <!-- Forgot -->
+    <div id="forgotForm" class="auth-form hidden">
+      <h2>Réinitialiser</h2>
+      <p class="muted text-sm" style="margin-bottom:14px;">Recevez un lien de réinitialisation par email.</p>
+      <div class="field"><label>Email</label><input type="email" id="fp_email" placeholder="toi@exemple.com"></div>
+      <button class="btn btn-primary btn-full" id="forgotSubmitBtn">Envoyer le lien</button>
+      <div class="auth-links"><a href="#" id="showLogin2">Retour</a></div>
+    </div>
+
+    <!-- Activate (OAuth without invite) -->
+    <div id="activateForm" class="auth-form hidden">
+      <h2>Activer le compte</h2>
+      <p class="muted text-sm" style="margin-bottom:14px;">EGO-META est un cercle privé. Entrez le code reçu d'un membre pour accéder.</p>
+      <div class="field"><label>Code d'invitation</label><input type="text" id="ac_invite" placeholder="Reçu d'un membre d'EGO-META"></div>
+      <button class="btn btn-primary btn-full" id="activateSubmitBtn">Activer mon compte</button>
+      <div class="auth-links"><a href="#" id="activateLogout">Utiliser un autre compte</a></div>
+    </div>
+
+    <p style="text-align:center;margin-top:20px;font-size:11px;color:var(--text-faint);">
+      <a href="home.html" target="_blank" rel="noopener" style="color:inherit;">Accueil</a> ·
+      <a href="terms.html" target="_blank" rel="noopener" style="color:inherit;">CGU</a> ·
+      <a href="privacy.html" target="_blank" rel="noopener" style="color:inherit;">Confidentialité</a>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════ APP SHELL ══════════════════════════ -->
+<div id="appShell">
+
+  <!-- Rail (PC only) -->
+  <div class="rail">
+    <div class="rail-logo">EM</div>
+    <div class="rail-divider"></div>
+    <button class="rail-btn active" data-view="dms" title="Messages privés">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4.2-1.1L3 20l1.1-5.3A8.38 8.38 0 0 1 3 11.5 8.38 8.38 0 0 1 11.5 3a8.38 8.38 0 0 1 9.5 8.5Z"/></svg>
+    </button>
+    <button class="rail-btn" data-view="groups" title="Groupes">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </button>
+    <button class="rail-btn" data-view="communities" title="Communautés">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l3-2V5h2v2l2-2v3l2-2v3l2-3v3l2-2v2l3 2v12Z"/><path d="M3 21h18"/><path d="M9 21v-5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v5"/></svg>
+    </button>
+    <button class="rail-btn" data-view="stories" title="Stories">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="4"/></svg>
+    </button>
+    <div class="rail-divider"></div>
+    <button class="rail-btn" data-view="friends" title="Amis">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12 4.5 8.5a2 2 0 0 1 2.8-2.8L11 9"/><path d="M13 9l3.7-3.3a2 2 0 0 1 2.8 2.8L15 13"/><path d="M8 12l3 3 2-2"/><path d="M11 15l2 2 5-5"/><path d="M2 15l3 3 2-2-3-3Z"/></svg>
+    </button>
+    <button class="rail-btn" data-view="notifications" title="Notifications" id="notifRailBtn">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+      <span class="notif-dot hidden" id="notifDot"></span>
+    </button>
+    <button class="rail-btn" data-view="starred" title="Favoris">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.6-5 4.4 1.5 6.5-6-3.5-6 3.5 1.5-6.5-5-4.4 6.6-.6Z"/></svg>
+    </button>
+    <button class="rail-btn" data-view="archived" title="Archivées">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M4 8v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 13h4"/></svg>
+    </button>
+    <button class="rail-btn" id="leaderboardBtn" title="Classement XP">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v6a4 4 0 0 1-8 0Z"/><path d="M8 5H5a2 2 0 0 0 0 4h3"/><path d="M16 5h3a2 2 0 0 1 0 4h-3"/><path d="M12 14v3"/><path d="M9 21h6"/></svg>
+    </button>
+    <button class="rail-btn hidden" id="adminRailBtn" title="Administration">
+      <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2.5a4.5 4.5 0 0 0-5.9 5.1L3 13.2v3.8h3.8l5.6-5.6a4.5 4.5 0 0 0 5.1-5.9l-3 3-2-2Z"/></svg>
+    </button>
+    <div style="flex:1"></div>
+    <div class="rail-avatar" id="myAvatarBtn"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2 id="sidebarTitle">Messages</h2>
+      <button class="btn-icon" id="sidebarAddBtn" title="Nouveau">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+      </button>
+    </div>
+    <div class="sidebar-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="sidebarSearch" placeholder="Rechercher...">
+    </div>
+    <div id="communityChannelHeader" class="hidden" style="padding:0 8px 4px;">
+      <button class="btn btn-ghost btn-sm btn-full" id="backToCommunitiesBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+        Toutes les communautés
+      </button>
+    </div>
+    <div id="storiesBar" class="hidden"></div>
+    <div class="sidebar-list" id="sidebarList"></div>
+  </div>
+
+  <!-- Main panel -->
+  <div class="main-panel" id="mainPanel">
+
+    <!-- Topbar -->
+    <div id="panelTopbar" style="display:none;">
+      <button class="btn-icon mobile-only" id="mobileBackBtn" title="Retour">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+      </button>
+      <div id="topbarAvatar"></div>
+      <div class="topbar-title">
+        <div id="topbarTitle" style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        <div id="topbarSub" style="font-size:11.5px;color:var(--text-faint);"></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-icon" id="focusModeBtn" title="Mode focus">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+        <button class="btn-icon" id="wallpaperBtn" title="Fond d'écran du chat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m8 10 2 2 4-4"/><path d="M2 17h20"/></svg>
+        </button>
+        <button class="btn-icon" id="searchMsgBtn" title="Rechercher">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </button>
+        <button class="btn-icon" id="pinnedBtn" title="Messages épinglés">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 17-5-3 1-6 4-1 4 1 1 6-5 3Z"/><path d="M12 17v4"/><path d="M8 3h8"/></svg>
+        </button>
+        <button class="btn-icon" id="pollsBtn" title="Sondages">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg>
+        </button>
+        <button class="btn-icon" id="exportChatBtn" title="Exporter la conversation">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="btn-icon" id="membersToggleBtn" title="Membres">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </button>
+        <button class="btn-icon hidden" id="convSettingsBtn" title="Paramètres">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Slow mode bar -->
+    <div id="slowModeBar" class="hidden"></div>
+
+    <!-- Empty state -->
+    <div id="mainEmptyState">
+      <div class="empty-state-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4"/><path d="M12 17v4"/><path d="M3 12h4"/><path d="M17 12h4"/><path d="M5.6 5.6l2.8 2.8"/><path d="M15.6 15.6l2.8 2.8"/><path d="M18.4 5.6l-2.8 2.8"/><path d="M8.4 15.6l-2.8 2.8"/></svg>
+      </div>
+      <div class="empty-state-title">Sélectionne une conversation</div>
+      <div class="empty-state-sub">Choisis un message, groupe, ou communauté dans la barre latérale pour commencer.</div>
+    </div>
+
+    <!-- Message list -->
+    <div id="messageList" class="hidden"></div>
+
+    <!-- Scroll to bottom button -->
+    <button id="scrollToBottomBtn" title="Défiler vers le bas">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+    </button>
+
+    <!-- Typing indicator -->
+    <div id="typingIndicator"></div>
+
+    <!-- Composer -->
+    <div id="composerWrap" class="hidden">
+      <!-- Upload preview -->
+      <div id="uploadPreviewBar"></div>
+
+      <!-- Formatting toolbar -->
+      <div id="formattingToolbar">
+        <button class="fmt-btn" data-fmt="bold" title="Gras"><strong>B</strong></button>
+        <button class="fmt-btn" data-fmt="italic" title="Italique"><em>I</em></button>
+        <button class="fmt-btn" data-fmt="strike" title="Barré"><del>S</del></button>
+        <div class="fmt-divider"></div>
+        <button class="fmt-btn" data-fmt="code" title="Code">&lt;/&gt;</button>
+        <button class="fmt-btn" data-fmt="codeblock" title="Bloc de code">```</button>
+        <div class="fmt-divider"></div>
+        <button class="fmt-btn" data-fmt="spoiler" title="Spoiler">||</button>
+      </div>
+
+      <!-- Reply bar -->
+      <div id="replyBar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6M3 10l6-6"/></svg>
+        <span id="replyBarPreview"></span>
+        <button id="replyBarClose" title="Annuler la réponse">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Main composer box -->
+      <div class="composer-box">
+        <button class="composer-btn" id="attachBtn" title="Joindre un fichier">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5 12.5 20a4.5 4.5 0 0 1-6.4-6.4L15 4.7a3 3 0 0 1 4.3 4.2l-8.9 8.9a1.5 1.5 0 0 1-2.1-2.1l8-8"/></svg>
+        </button>
+        <input type="file" id="attachInput" class="hidden" multiple accept="image/*,video/*,audio/*,.pdf,.txt,.zip,.csv">
+        <button class="composer-btn" id="fmtToggleBtn" title="Formatage">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M4 12h10"/><path d="M4 17h6"/></svg>
+        </button>
+        <textarea id="composerInput" placeholder="Écrire un message... (@pseudo, @everyone)" rows="1"></textarea>
+        <button class="composer-btn" id="emojiBtn" title="Emoji">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/></svg>
+        </button>
+        <button class="composer-btn" id="micBtn" title="Message vocal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 19v3"/><path d="M8 22h8"/></svg>
+        </button>
+        <button class="send-btn" id="sendBtn" disabled title="Envoyer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>
+        </button>
+      </div>
+
+      <!-- Voice record bar -->
+      <div id="voiceRecordBar">
+        <div class="voice-pulse"></div>
+        <span id="voiceTimer">0:00</span>
+        <span class="muted text-sm" style="flex:1">Enregistrement en cours...</span>
+        <button class="btn btn-ghost btn-sm" id="voiceCancelBtn">Annuler</button>
+        <button class="btn btn-danger btn-sm" id="voiceSendBtn">
+          Envoyer
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>
+        </button>
+      </div>
+
+      <!-- Emoji picker -->
+      <div id="emojiPicker">
+        <input type="text" id="emojiSearch" placeholder="Rechercher un emoji...">
+        <div class="emoji-grid" id="emojiGrid"></div>
+      </div>
+
+      <!-- Mention popup -->
+      <div id="mentionPopup"></div>
+    </div>
+
+    <!-- Drop overlay -->
+    <div id="dropOverlay" aria-hidden="true">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px"><path d="M21 11.5 12.5 20a4.5 4.5 0 0 1-6.4-6.4L15 4.7a3 3 0 0 1 4.3 4.2l-8.9 8.9a1.5 1.5 0 0 1-2.1-2.1l8-8"/></svg>
+      Déposer les fichiers ici
+    </div>
+  </div>
+
+  <!-- Members panel -->
+  <div class="members-panel hidden" id="membersPanel">
+    <div class="members-panel-header">Membres</div>
+    <div class="members-panel-list" id="membersList"></div>
+  </div>
+
+  <!-- Mobile bottom nav (injected at runtime, but placeholder here) -->
+  <nav id="mobileBottomNav" class="mobile-only">
+    <button class="mobile-nav-btn active" data-view="dms">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4.2-1.1L3 20l1.1-5.3A8.38 8.38 0 0 1 3 11.5 8.38 8.38 0 0 1 11.5 3a8.38 8.38 0 0 1 9.5 8.5Z"/></svg>
+      DMs
+    </button>
+    <button class="mobile-nav-btn" data-view="groups">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Groupes
+    </button>
+    <button class="mobile-nav-btn" data-view="communities">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l3-2V5h2v2l2-2v3l2-2v3l2-3v3l2-2v2l3 2v12Z"/><path d="M3 21h18"/><path d="M9 21v-5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v5"/></svg>
+      Communautés
+    </button>
+    <button class="mobile-nav-btn" data-view="stories">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="4"/></svg>
+      Stories
+    </button>
+    <button class="mobile-nav-btn" id="mobileMoreBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+      Plus
+      <span class="notif-dot hidden" id="notifDotMobile"></span>
+    </button>
+  </nav>
+
+</div><!-- /appShell -->
+
+<!-- Focus mode container -->
+<div id="focusModeOverlay">
+  <div class="focus-mode-inner" id="focusModeInner">
+    <!-- Messages and composer are moved here dynamically -->
+  </div>
+</div>
+
+<!-- Image lightbox -->
+<div id="imageLightbox">
+  <button id="lightboxClose">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- Toast container -->
+<div id="toastContainer" role="status" aria-live="polite"></div>
+
+<!-- ══════════════════════════ MODALS ══════════════════════════ -->
+
+<!-- Créer un groupe -->
+<div class="modal-overlay" id="modalCreateGroup">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Créer un groupe</div>
+      <button class="btn-icon" data-close-modal="modalCreateGroup">✕</button>
+    </div>
+    <div class="field"><label>Nom du groupe</label><input type="text" id="cg_name" placeholder="Ex : Aventuriers RP"></div>
+    <div class="field"><label>Description (optionnel)</label><textarea id="cg_desc"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-close-modal="modalCreateGroup">Annuler</button>
+      <button class="btn btn-primary" id="cg_submit">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Créer une communauté -->
+<div class="modal-overlay" id="modalCreateCommunity">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Créer une communauté</div>
+      <button class="btn-icon" data-close-modal="modalCreateCommunity">✕</button>
+    </div>
+    <div class="field"><label>Nom de la communauté</label><input type="text" id="cc_name" placeholder="Ex : Le Royaume RP"></div>
+    <div class="field"><label>Description (optionnel)</label><textarea id="cc_desc"></textarea></div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Communauté publique</div>
+        <div class="toggle-sub">Visible et rejoignable par tous</div>
+      </div>
+      <button class="toggle" id="cc_public_toggle"></button>
+      <input type="checkbox" id="cc_public" class="hidden">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-close-modal="modalCreateCommunity">Annuler</button>
+      <button class="btn btn-primary" id="cc_submit">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rejoindre -->
+<div class="modal-overlay" id="modalJoin">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Rejoindre</div>
+      <button class="btn-icon" data-close-modal="modalJoin">✕</button>
+    </div>
+    <div class="friends-tabs" style="margin-bottom:16px;">
+      <button class="friends-tab active" data-jointab="code">Avec un code</button>
+      <button class="friends-tab" data-jointab="discover">Communautés publiques</button>
+    </div>
+    <div data-jointabpanel="code">
+      <div class="field"><label>Code d'invitation</label><input type="text" id="join_code" placeholder="Ex : a1b2c3d4"></div>
+      <button class="btn btn-primary btn-full" id="join_submit">Rejoindre</button>
+    </div>
+    <div data-jointabpanel="discover" class="hidden">
+      <div id="discoverList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Paramètres de groupe -->
+<div class="modal-overlay" id="modalGroupSettings">
+  <div class="modal-card modal-wide">
+    <div class="modal-header">
+      <div class="modal-title" id="gs_title">Paramètres du groupe</div>
+      <button class="btn-icon" data-close-modal="modalGroupSettings">✕</button>
+    </div>
+    <div class="friends-tabs">
+      <button class="friends-tab active" data-gstab="general">Général</button>
+      <button class="friends-tab" data-gstab="members">Membres</button>
+      <button class="friends-tab" data-gstab="danger">Danger</button>
+    </div>
+    <div style="margin-top:16px;">
+      <div data-gstabpanel="general">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div id="gs_icon_preview"></div>
+          <button class="btn btn-ghost btn-sm" id="gs_icon_upload_btn" style="margin-top:8px;">Changer la photo</button>
+          <input type="file" id="gs_icon_input" class="hidden" accept="image/*">
+        </div>
+        <div class="field"><label>Nom</label><input type="text" id="gs_name"></div>
+        <div class="field"><label>Description</label><textarea id="gs_desc"></textarea></div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">@everyone réservé aux admins</div><div class="toggle-sub">Seuls owner/admin peuvent mentionner tout le groupe</div></div>
+          <input type="checkbox" id="gs_tagall" style="width:20px;height:20px;cursor:pointer;">
+        </div>
+        <div class="field" style="margin-top:14px;"><label>Code d'invitation</label>
+          <div style="display:flex;gap:8px;"><input type="text" id="gs_invite" readonly style="flex:1"><button class="btn btn-ghost btn-sm" id="gs_copy_invite">Copier</button></div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="gs_save" style="margin-top:12px;">Enregistrer</button>
+      </div>
+      <div data-gstabpanel="members" class="hidden"><div id="gs_members_list"></div></div>
+      <div data-gstabpanel="danger" class="hidden">
+        <button class="btn btn-danger" id="gs_leave">Quitter le groupe</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Paramètres de communauté -->
+<div class="modal-overlay" id="modalCommunitySettings">
+  <div class="modal-card modal-wide">
+    <div class="modal-header">
+      <div class="modal-title" id="cs_title">Paramètres de la communauté</div>
+      <button class="btn-icon" data-close-modal="modalCommunitySettings">✕</button>
+    </div>
+    <div class="friends-tabs">
+      <button class="friends-tab active" data-cstab="general">Général</button>
+      <button class="friends-tab" data-cstab="channels">Salons</button>
+      <button class="friends-tab" data-cstab="members">Membres</button>
+      <button class="friends-tab" data-cstab="danger">Danger</button>
+    </div>
+    <div style="margin-top:16px;">
+      <div data-cstabpanel="general">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div id="cs_icon_preview"></div>
+          <button class="btn btn-ghost btn-sm" id="cs_icon_upload_btn" style="margin-top:8px;">Changer l'icône</button>
+          <input type="file" id="cs_icon_input" class="hidden" accept="image/*">
+        </div>
+        <div class="field"><label>Nom</label><input type="text" id="cs_name"></div>
+        <div class="field"><label>Description</label><textarea id="cs_desc"></textarea></div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Communauté publique</div></div>
+          <input type="checkbox" id="cs_public" style="width:20px;height:20px;cursor:pointer;">
+        </div>
+        <div class="field" style="margin-top:14px;"><label>Code d'invitation</label>
+          <div style="display:flex;gap:8px;"><input type="text" id="cs_invite" readonly style="flex:1"><button class="btn btn-ghost btn-sm" id="cs_copy_invite">Copier</button></div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="cs_save" style="margin-top:12px;">Enregistrer</button>
+      </div>
+      <div data-cstabpanel="channels" class="hidden">
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <input type="text" id="cs_new_channel" placeholder="nom-du-salon" class="field" style="flex:1;margin:0;">
+          <button class="btn btn-primary btn-sm" id="cs_add_channel">+ Ajouter</button>
+        </div>
+        <div id="cs_channels_list"></div>
+      </div>
+      <div data-cstabpanel="members" class="hidden"><div id="cs_members_list"></div></div>
+      <div data-cstabpanel="danger" class="hidden">
+        <button class="btn btn-danger" id="cs_leave">Quitter la communauté</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Paramètres personnels -->
+<div class="modal-overlay" id="modalSettings">
+  <div class="modal-card modal-wide">
+    <div class="modal-header">
+      <div class="modal-title">Paramètres</div>
+      <button class="btn-icon" data-close-modal="modalSettings">✕</button>
+    </div>
+    <div class="friends-tabs" style="flex-wrap:wrap;">
+      <button class="friends-tab active" data-sptab="profile">Profil</button>
+      <button class="friends-tab" data-sptab="appearance">Apparence</button>
+      <button class="friends-tab" data-sptab="wallpaper">Fond d'écran</button>
+      <button class="friends-tab" data-sptab="privacy">Confidentialité</button>
+      <button class="friends-tab" data-sptab="account">Compte</button>
+      <button class="friends-tab" data-sptab="help">Aide</button>
+    </div>
+    <div style="margin-top:16px;">
+      <!-- Profile tab -->
+      <div data-sptabpanel="profile">
+        <div style="text-align:center;margin-bottom:18px;">
+          <div id="sp_avatar_preview"></div>
+          <button class="btn btn-ghost btn-sm" id="sp_avatar_upload_btn" style="margin-top:10px;">Changer la photo</button>
+          <input type="file" id="sp_avatar_input" class="hidden" accept="image/*">
+        </div>
+        <div class="field"><label>Nom affiché</label><input type="text" id="sp_displayname"></div>
+        <div class="field"><label>Pronoms (optionnel)</label><input type="text" id="sp_pronouns" placeholder="ex : iel/elle/il"></div>
+        <div class="field"><label>Personnage RP (optionnel)</label><input type="text" id="sp_rpcharacter" placeholder="ex : Elara Nightshade, mage de l'ombre"></div>
+        <div class="field"><label>Bio</label><textarea id="sp_bio"></textarea></div>
+        <div class="field"><label>Message de statut</label><input type="text" id="sp_statusmsg" placeholder="Ex : en pleine session RP 🎭"></div>
+        <div class="field"><label>Statut</label>
+          <select id="sp_status">
+            <option value="online">En ligne</option>
+            <option value="away">Absent</option>
+            <option value="dnd">Ne pas déranger</option>
+            <option value="offline">Invisible</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" id="sp_save_profile">Enregistrer le profil</button>
+      </div>
+
+      <!-- Appearance tab -->
+      <div data-sptabpanel="appearance" class="hidden">
+        <div class="settings-section">
+          <div class="settings-section-title">Thème</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Thème sombre</div><div class="toggle-sub">Désactivez pour le thème clair</div></div>
+            <input type="checkbox" id="sp_theme_dark" checked style="width:20px;height:20px;cursor:pointer;">
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Couleur d'accent</div>
+          <div class="accent-palette" id="accentSwatches"></div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Densité</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Densité des messages</div><div class="toggle-sub">Compacte = plus de messages visibles</div></div>
+            <select id="sp_density" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border-soft);border-radius:8px;padding:6px;">
+              <option value="comfortable">Confortable</option>
+              <option value="compact">Compacte</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Sons & Notifications</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Son de notification</div><div class="toggle-sub">Joue un son discret à chaque message</div></div>
+            <input type="checkbox" id="sp_notif_sound" checked style="width:20px;height:20px;cursor:pointer;">
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Notifications navigateur</div><div class="toggle-sub">Notifications système même en arrière-plan</div></div>
+            <button class="btn btn-ghost btn-sm" id="sp_ask_notif_perm">Activer</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wallpaper tab -->
+      <div data-sptabpanel="wallpaper" class="hidden">
+        <div class="settings-section">
+          <div class="settings-section-title">Fond d'écran du chat actif</div>
+          <p class="text-sm muted" style="margin-bottom:12px;">Choisissez un fond pour la conversation ouverte, ou une image personnalisée.</p>
+          <div class="wallpaper-grid" id="wallpaperGrid">
+            <div class="wallpaper-thumb wt-none selected" data-wallpaper="">Aucun</div>
+            <div class="wallpaper-thumb" data-wallpaper="linear-gradient(135deg,#1a0533,#0a0a1f)" style="background:linear-gradient(135deg,#1a0533,#0a0a1f)"></div>
+            <div class="wallpaper-thumb" data-wallpaper="linear-gradient(135deg,#001f3d,#003d00)" style="background:linear-gradient(135deg,#001f3d,#003d00)"></div>
+            <div class="wallpaper-thumb" data-wallpaper="linear-gradient(135deg,#3d0015,#1a001a)" style="background:linear-gradient(135deg,#3d0015,#1a001a)"></div>
+            <div class="wallpaper-thumb" data-wallpaper="linear-gradient(135deg,#0d1b2a,#1b2838)" style="background:linear-gradient(135deg,#0d1b2a,#1b2838)"></div>
+            <div class="wallpaper-thumb" data-wallpaper="repeating-linear-gradient(45deg,#0e0e18 0,#0e0e18 10px,#141428 10px,#141428 20px)" style="background:repeating-linear-gradient(45deg,#0e0e18 0,#0e0e18 10px,#141428 10px,#141428 20px)"></div>
+            <div class="wallpaper-thumb" data-wallpaper="radial-gradient(ellipse at 20% 30%,#2d1b69 0%,#0a0a14 60%)" style="background:radial-gradient(ellipse at 20% 30%,#2d1b69 0%,#0a0a14 60%)"></div>
+          </div>
+          <div style="margin-top:12px;">
+            <label class="btn btn-ghost btn-sm" for="wallpaperUploadInput">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Image personnalisée
+            </label>
+            <input type="file" id="wallpaperUploadInput" class="hidden" accept="image/*">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="wallpaperApplyBtn">Appliquer</button>
+          <button class="btn btn-ghost" id="wallpaperResetBtn">Réinitialiser</button>
+        </div>
+      </div>
+
+      <!-- Privacy tab -->
+      <div data-sptabpanel="privacy" class="hidden">
+        <div class="settings-section">
+          <div class="settings-section-title">Confidentialité des messages</div>
+          <div class="field"><label>Qui peut vous envoyer un message privé ?</label>
+            <select id="sp_dm_privacy">
+              <option value="everyone">Tout le monde</option>
+              <option value="friends_only">Mes amis uniquement</option>
+              <option value="nobody">Personne</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" id="sp_save_privacy">Enregistrer</button>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Utilisateurs bloqués</div>
+          <div id="sp_blocked_list"></div>
+        </div>
+      </div>
+
+      <!-- Account tab -->
+      <div data-sptabpanel="account" class="hidden">
+        <div class="settings-section">
+          <div class="settings-section-title">Sécurité</div>
+          <div class="field"><label>Nouveau mot de passe</label><input type="password" id="sp_new_password" placeholder="••••••••"></div>
+          <button class="btn btn-ghost btn-sm" id="sp_change_password">Changer le mot de passe</button>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Session</div>
+          <button class="btn btn-danger" id="sp_logout">Se déconnecter</button>
+        </div>
+      </div>
+
+      <!-- Help tab -->
+      <div data-sptabpanel="help" class="hidden">
+        <div class="settings-section">
+          <div class="settings-section-title">Liens utiles</div>
+          <div class="toggle-row"><div><div class="toggle-label">Aide & Support</div></div><a class="btn btn-ghost btn-sm" href="help.html" target="_blank">Ouvrir</a></div>
+          <div class="toggle-row"><div><div class="toggle-label">Conditions d'utilisation</div></div><a class="btn btn-ghost btn-sm" href="terms.html" target="_blank">Ouvrir</a></div>
+          <div class="toggle-row"><div><div class="toggle-label">Politique de confidentialité</div></div><a class="btn btn-ghost btn-sm" href="privacy.html" target="_blank">Ouvrir</a></div>
+          <div class="toggle-row"><div><div class="toggle-label">Page d'accueil</div></div><a class="btn btn-ghost btn-sm" href="home.html" target="_blank">Ouvrir</a></div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Raccourcis clavier</div>
+          <div class="toggle-row"><div class="toggle-label">Ouvrir la recherche rapide</div><kbd style="background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:4px;padding:3px 7px;font-size:12px;">Ctrl+K</kbd></div>
+          <div class="toggle-row"><div class="toggle-label">Envoyer le message</div><kbd style="background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:4px;padding:3px 7px;font-size:12px;">Entrée</kbd></div>
+          <div class="toggle-row"><div class="toggle-label">Saut de ligne</div><kbd style="background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:4px;padding:3px 7px;font-size:12px;">Shift+Entrée</kbd></div>
+          <div class="toggle-row"><div class="toggle-label">Mode focus</div><kbd style="background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:4px;padding:3px 7px;font-size:12px;">Ctrl+F</kbd></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profil utilisateur -->
+<div class="modal-overlay" id="modalUserProfile">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Profil</div>
+      <button class="btn-icon" data-close-modal="modalUserProfile">✕</button>
+    </div>
+    <div id="userProfileBody"></div>
+  </div>
+</div>
+
+<!-- Signalement -->
+<div class="modal-overlay" id="modalReport">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Signaler</div>
+      <button class="btn-icon" data-close-modal="modalReport">✕</button>
+    </div>
+    <div class="field"><label>Motif</label>
+      <select id="rp_reason">
+        <option>Harcèlement</option><option>Spam</option><option>Contenu inapproprié</option>
+        <option>Usurpation d'identité</option><option>Autre</option>
+      </select>
+    </div>
+    <div class="field"><label>Détails</label><textarea id="rp_details"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-close-modal="modalReport">Annuler</button>
+      <button class="btn btn-danger" id="rp_submit">Envoyer le signalement</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nouveau salon -->
+<div class="modal-overlay" id="modalNewChannel">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Nouveau salon</div>
+      <button class="btn-icon" data-close-modal="modalNewChannel">✕</button>
+    </div>
+    <div class="field"><label>Nom du salon</label><input type="text" id="nc_name" placeholder="nom-du-salon"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-close-modal="modalNewChannel">Annuler</button>
+      <button class="btn btn-primary" id="nc_submit">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Messages épinglés -->
+<div class="modal-overlay" id="modalPinned">
+  <div class="modal-card modal-wide">
+    <div class="modal-header">
+      <div class="modal-title">Messages épinglés</div>
+      <button class="btn-icon" data-close-modal="modalPinned">✕</button>
+    </div>
+    <div id="pinnedBody"></div>
+  </div>
+</div>
+
+<!-- Recherche dans la conv -->
+<div class="modal-overlay" id="modalSearchMsg">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Rechercher dans la conversation</div>
+      <button class="btn-icon" data-close-modal="modalSearchMsg">✕</button>
+    </div>
+    <input type="text" id="searchMsgInput" class="forward-search" placeholder="Rechercher un message...">
+    <div id="searchMsgResults"></div>
+  </div>
+</div>
+
+<!-- Transférer -->
+<div class="modal-overlay" id="modalForward">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Transférer le message</div>
+      <button class="btn-icon" data-close-modal="modalForward">✕</button>
+    </div>
+    <p class="text-sm muted" style="margin-bottom:12px;">Choisissez une ou plusieurs conversations.</p>
+    <div id="forwardTargetList" style="max-height:320px;overflow-y:auto;"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-close-modal="modalForward">Annuler</button>
+      <button class="btn btn-primary" id="forward_submit">Transférer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sondages -->
+<div class="modal-overlay" id="modalPolls">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Sondages</div>
+      <button class="btn-icon" data-close-modal="modalPolls">✕</button>
+    </div>
+    <div id="pollsList" style="margin-bottom:16px;"></div>
+    <div style="padding-top:16px;border-top:1px solid var(--border-soft);">
+      <div class="settings-section-title" style="margin-bottom:10px;">Créer un sondage</div>
+      <div class="field"><label>Question</label><input type="text" id="poll_question" placeholder="Votre question"></div>
+      <div class="field"><label>Options (une par ligne, 2 minimum)</label><textarea id="poll_options" rows="4" placeholder="Option A&#10;Option B&#10;Option C"></textarea></div>
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer;">
+        <input type="checkbox" id="poll_allow_multiple"> Autoriser plusieurs choix
+      </label>
+      <button class="btn btn-primary btn-full" id="poll_submit">Créer le sondage</button>
+    </div>
+  </div>
+</div>
+
+<!-- Classement XP -->
+<div class="modal-overlay" id="modalLeaderboard">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Classement EGO-META</div>
+      <button class="btn-icon" data-close-modal="modalLeaderboard">✕</button>
+    </div>
+    <div id="leaderboardBody"></div>
+  </div>
+</div>
+
+<!-- Demandes d'ami -->
+<div class="modal-overlay" id="modalFriendRequests">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Demandes d'ami</div>
+      <button class="btn-icon" data-close-modal="modalFriendRequests">✕</button>
+    </div>
+    <div id="friendRequestsBody"></div>
+  </div>
+</div>
+
+<!-- Story viewer -->
+<div id="storyViewerOverlay" style="position:fixed;inset:0;z-index:9999;background:#000;display:none;flex-direction:column;">
+  <div style="position:relative;width:100%;height:100%;">
+    <div class="story-progress-bar" id="sv_progress"></div>
+    <div class="story-viewer-header">
+      <div id="sv_author_avatar"></div>
+      <div class="story-viewer-name" id="sv_author_name"></div>
+      <div class="story-viewer-time" id="sv_time"></div>
+      <button class="btn-icon hidden" id="sv_viewers_btn" style="color:#fff;" title="Qui a vu ?">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <button class="btn-icon hidden" id="sv_delete" style="color:#fff;" title="Supprimer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6Z"/></svg>
+      </button>
+      <button id="sv_close" style="background:transparent;border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;" title="Fermer">✕</button>
+    </div>
+    <div id="sv_stage" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
+    <div id="sv_caption" style="position:absolute;bottom:100px;left:0;right:0;text-align:center;color:#fff;font-size:15px;padding:0 24px;text-shadow:0 2px 8px rgba(0,0,0,.8);"></div>
+    <div class="story-nav-zone" id="sv_prev_zone"></div>
+    <div class="story-nav-zone" id="sv_next_zone" style="right:0;left:auto;"></div>
+    <div class="story-viewers-panel" id="sv_viewers_panel" style="display:none;">
+      <div style="color:rgba(255,255,255,.6);font-size:11px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Vu par</div>
+      <div id="sv_viewers_list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Créer une story -->
+<div class="modal-overlay" id="modalCreateStory">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Nouvelle story (visible 24h)</div>
+      <button class="btn-icon" data-close-modal="modalCreateStory">✕</button>
+    </div>
+    <div class="field"><label>Image ou vidéo (optionnel)</label><input type="file" id="cs_story_file" accept="image/*,video/*"></div>
+    <div id="cs_story_preview" style="margin-bottom:12px;"></div>
+    <div class="field"><label>Texte (légende ou story texte seul)</label><textarea id="cs_story_text" placeholder="Quoi de neuf ?"></textarea></div>
+    <div class="field"><label>Couleur de fond</label><div class="accent-palette" id="cs_story_bgswatches"></div></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" data-close-modal="modalCreateStory">Annuler</button>
+      <button class="btn btn-primary" id="cs_story_submit">Publier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Command palette (Ctrl+K) -->
+<div class="modal-overlay" id="modalCommandPalette">
+  <div class="modal-card" id="commandPaletteCard">
+    <input type="text" id="cmdkInput" id="commandPaletteInput" placeholder="Rechercher une personne, un groupe, une communauté..." style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--border-soft);color:var(--text);font-size:15px;padding:18px 20px;outline:none;font-family:'Inter',sans-serif;margin-bottom:8px;">
+    <div id="cmdkResults" style="max-height:340px;overflow-y:auto;padding:8px;"></div>
+    <p class="text-xs muted" style="padding:8px 12px 4px;">Astuce : <kbd style="background:var(--bg-panel-2);border:1px solid var(--border-soft);border-radius:3px;padding:1px 5px;">Ctrl+K</kbd> ouvre cette recherche à tout moment.</p>
+  </div>
+</div>
+
+<!-- Onboarding -->
+<div class="modal-overlay" id="modalOnboarding">
+  <div class="modal-card">
+    <div class="onboarding-step active" data-onb="1">
+      <div class="onboarding-emoji">🌌</div>
+      <div class="onboarding-title">Bienvenue sur EGO-META</div>
+      <div class="onboarding-body">Ton monde RP, connecté. Messagerie privée, groupes, communautés à salons multiples, et un système de niveaux pour récompenser ton activité.</div>
+    </div>
+    <div class="onboarding-step" data-onb="2">
+      <div class="onboarding-emoji">📸</div>
+      <div class="onboarding-title">Stories 24h</div>
+      <div class="onboarding-body">Partage un moment avec ta communauté — visible pendant 24h, puis ça disparaît automatiquement.</div>
+    </div>
+    <div class="onboarding-step" data-onb="3">
+      <div class="onboarding-emoji">⚡</div>
+      <div class="onboarding-title">Messages vocaux & plus</div>
+      <div class="onboarding-body">Enregistre un message vocal, épingle tes conversations préférées, et personnalise ton profil avec thème et fond d'écran.</div>
+    </div>
+    <div class="onboarding-dots" id="onb_dots"></div>
+    <button class="btn btn-primary btn-full" id="onb_next" style="margin-top:20px;">Suivant</button>
+  </div>
+</div>
+
+<!-- Mobile "Plus" menu (slide up) -->
+<div id="mobileMoreMenu" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bg-elevated);border-top:1px solid var(--border-soft);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:16px 8px 24px;display:none;flex-direction:column;gap:4px;">
+  <div style="width:36px;height:4px;background:var(--border-soft);border-radius:2px;margin:0 auto 16px;"></div>
+  <button class="mobile-nav-btn" data-view="friends" style="flex-direction:row;justify-content:flex-start;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12 4.5 8.5a2 2 0 0 1 2.8-2.8L11 9"/><path d="M13 9l3.7-3.3a2 2 0 0 1 2.8 2.8L15 13"/></svg>
+    Amis
+  </button>
+  <button class="mobile-nav-btn" data-view="notifications" style="flex-direction:row;justify-content:flex-start;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+    Notifications
+  </button>
+  <button class="mobile-nav-btn" data-view="starred" style="flex-direction:row;justify-content:flex-start;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 6 6.6.6-5 4.4 1.5 6.5-6-3.5-6 3.5 1.5-6.5-5-4.4 6.6-.6Z"/></svg>
+    Favoris
+  </button>
+  <button class="mobile-nav-btn" id="leaderboardBtnMobile" style="flex-direction:row;justify-content:flex-start;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v6a4 4 0 0 1-8 0Z"/><path d="M8 5H5a2 2 0 0 0 0 4h3"/><path d="M16 5h3a2 2 0 0 1 0 4h-3"/><path d="M12 14v3"/><path d="M9 21h6"/></svg>
+    Classement XP
+  </button>
+  <button class="mobile-nav-btn" id="myAvatarBtnMobile" style="flex-direction:row;justify-content:flex-start;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Mon profil & Paramètres
+  </button>
+</div>
+<div id="mobileMoreBackdrop" style="position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.5);display:none;backdrop-filter:blur(4px);"></div>
+
+<!-- Scripts — backend 100 % local -->
+<script src="js/local-db.js"></script>
+<script src="js/local-realtime.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/xp.js"></script>
+<script src="js/render.js"></script>
+<script src="js/voice.js"></script>
+<script src="js/stories.js"></script>
+<script src="js/browser-notify.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script src="js/features.js"></script>
+</body>
+</html>

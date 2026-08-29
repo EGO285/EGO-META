@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Politique de confidentialité — EGO-META</title>
+<meta name="theme-color" content="#080b11">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="static-page">
+
+<header class="site-header">
+  <a class="brand" href="home.html">
+    <div class="rail-logo">E</div>
+    EGO-META
+  </a>
+  <nav class="site-nav">
+    <a href="home.html">Accueil</a>
+    <a href="help.html">Aide</a>
+    <div class="site-nav-ctas">
+      <a class="btn btn-ghost btn-sm" href="index.html">Se connecter</a>
+    </div>
+  </nav>
+</header>
+
+<article class="static-narrow">
+  <h1>Politique de confidentialité</h1>
+  <p class="updated-date">EGO-META est un petit site privé, pas un produit commercial à grande échelle. Cette page explique honnêtement ce qui est collecté et pourquoi — sans jargon inutile.</p>
+
+  <h2>1. Ce que nous collectons</h2>
+  <p>Pour fonctionner, EGO-META stocke :</p>
+  <ul>
+    <li><strong>Ton compte</strong> : adresse email, mot de passe (chiffré, jamais stocké en clair — géré par Supabase Auth), pseudonyme, nom affiché.</li>
+    <li><strong>Ton profil</strong> : photo de profil, bio, pronoms, personnage RP, statut, si tu choisis de les renseigner.</li>
+    <li><strong>Tes messages</strong> : le contenu de tes conversations privées, groupes et salons de communauté, ainsi que les fichiers (images, audio, documents) que tu envoies.</li>
+    <li><strong>Des métadonnées d'usage</strong> : dates de connexion, statut en ligne, accusés de lecture, réactions, votes de sondage — nécessaires au fonctionnement d'une messagerie en temps réel.</li>
+  </ul>
+
+  <h2>2. Ce que nous ne faisons jamais</h2>
+  <p>EGO-META n'affiche aucune publicité, ne vend aucune donnée, et ne partage aucune information avec des régies publicitaires ou des courtiers en données. Il n'y a pas de traqueur publicitaire tiers sur ce site.</p>
+
+  <h2>3. Où sont stockées les données</h2>
+  <p>Les données sont hébergées sur <strong>Supabase</strong> (base de données et stockage de fichiers) et le site lui-même sur <strong>Netlify</strong> (ou un hébergeur statique équivalent) — deux prestataires d'infrastructure choisis par l'administrateur de ce site, dans la région qu'il a sélectionnée lors de la création du projet.</p>
+
+  <h2>4. Stockage local dans ton navigateur</h2>
+  <p>EGO-META utilise le stockage local de ton navigateur (localStorage) uniquement pour retenir des préférences d'affichage non sensibles : densité des messages et préférence de son de notification. Aucune donnée personnelle sensible n'y est stockée.</p>
+
+  <h2>5. Qui peut voir tes données</h2>
+  <p>Chaque règle d'accès est appliquée directement au niveau de la base de données (Row Level Security) : un membre ne peut voir que les conversations dont il fait partie, et ne peut modifier que ses propres données. L'administrateur du site n'a jamais accès en clair à ton mot de passe (il est chiffré par Supabase Auth, y compris pour l'administrateur).</p>
+  <p><strong>Point important à connaître :</strong> l'administrateur du site dispose d'un accès total, en lecture seule, à toutes les conversations de tous les membres (messages privés, groupes et salons de communauté), à tout moment — y compris les conversations dont il ne fait pas partie. Cet accès sert à la modération et à la gestion du site ; il ne permet pas à l'administrateur d'envoyer des messages à ta place ni de se faire passer pour toi. EGO-META reste, comme indiqué en introduction, un petit site privé entre personnes qui se connaissent : si ce niveau d'accès de l'administrateur pose problème pour toi, n'y partage pas d'informations que tu ne voudrais pas qu'il puisse lire.</p>
+
+  <h2>6. Durée de conservation</h2>
+  <p>Tes données sont conservées tant que ton compte existe. Si ton compte est supprimé (par toi-même via une demande à l'administrateur, ou par l'administrateur en cas de bannissement), les données associées peuvent être supprimées à sa discrétion.</p>
+
+  <h2>7. Tes droits</h2>
+  <p>Tu peux à tout moment demander à l'administrateur de ta communauté : l'accès à tes données, leur correction, ou leur suppression complète (droit à l'oubli). Voir la page <a href="help.html">Aide &amp; Support</a> pour le contacter.</p>
+
+  <h2>8. Mineurs</h2>
+  <p>EGO-META est un espace privé entre personnes qui se connaissent, géré par l'administrateur de chaque communauté, qui est responsable de s'assurer du respect des règles applicables concernant les mineurs.</p>
+
+  <h2>9. Sécurité</h2>
+  <p>Le site utilise HTTPS pour chiffrer les échanges, une authentification sécurisée (Supabase Auth), et des règles d'accès strictes testées avant chaque mise à jour. Aucun système n'est infaillible : signale toute faille suspectée à l'administrateur du site.</p>
+
+  <h2>10. Modifications</h2>
+  <p>Cette politique peut évoluer avec le site. Les changements importants seront communiqués via l'annonce globale du site.</p>
+</article>
+
+<footer class="site-footer">
+  <div class="footer-bottom">
+    <span>© <span id="ftYear"></span> EGO-META</span>
+    <span><a href="home.html">Accueil</a> · <a href="terms.html">CGU</a> · <a href="help.html">Aide</a></span>
+  </div>
+</footer>
+<script>document.getElementById('ftYear').textContent = new Date().getFullYear();</script>
+</body>
+</html>
