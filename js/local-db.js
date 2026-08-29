@@ -26,12 +26,13 @@ function _nowISO() { return new Date().toISOString(); }
 
 /* ── IndexedDB engine ───────────────────────────────────────────────────── */
 const _IDB_NAME    = 'ego_meta_v4';
-const _IDB_VERSION = 1;
+const _IDB_VERSION = 2;
 const _STORES = [
   'profiles','users_auth','conversations','conversation_members',
   'groups','communities','community_members','channels','channel_categories',
   'messages','message_reactions','message_hidden_for',
-  'notifications','invite_codes','stories','story_views'
+  'notifications','invite_codes','stories','story_views',
+  'blocks','friend_requests'
 ];
 
 let _idb = null;
@@ -943,8 +944,77 @@ async function searchMessages(query, conversationId = null) {
 async function listStarredMessages() { return []; }
 async function toggleStarMessage()   { toast('Fonctionnalité en cours', 'info'); }
 async function listFriends()         { return []; }
-async function sendFriendRequest()   { toast('Ami envoyé'); }
+async function sendFriendRequest()   { toast('Demande envoyée'); }
 async function acceptFriendRequest() { toast('Ami accepté'); }
+async function listIncomingFriendRequests() { return []; }
+async function removeFriend()        { toast('Ami retiré'); }
+async function declineFriendRequest(){ /* stub */ }
+
+/* ============================================================
+   BLOCAGE D'UTILISATEURS
+   ============================================================ */
+
+async function blockUser(userId) {
+  const me = await getMyProfile();
+  if (!me) return;
+  const existing = await _query('blocks', b => b.blocker_id === me.id && b.blocked_id === userId);
+  if (existing.length) return; // déjà bloqué
+  await _idbPut('blocks', { id: _uuid(), blocker_id: me.id, blocked_id: userId, created_at: _nowISO() });
+  toast('Utilisateur bloqué');
+}
+
+async function unblockUser(userId) {
+  const me = await getMyProfile();
+  if (!me) return;
+  const rows = await _query('blocks', b => b.blocker_id === me.id && b.blocked_id === userId);
+  for (const r of rows) await _idbDel('blocks', r.id);
+  toast('Utilisateur débloqué');
+}
+
+async function listBlocked() {
+  const me = await getMyProfile();
+  if (!me) return [];
+  const rows = await _query('blocks', b => b.blocker_id === me.id);
+  const result = [];
+  for (const r of rows) {
+    const profile = await getProfile(r.blocked_id);
+    result.push({ ...r, profiles: profile });
+  }
+  return result;
+}
+
+/* ============================================================
+   PARAMÈTRES DU SITE
+   ============================================================ */
+
+async function getSiteSettings() {
+  // Retourne des valeurs par défaut — tout est local, pas de BDD distante
+  return {
+    id: true,
+    maintenance_mode: false,
+    registration_open: true,
+    require_invite: true,
+    site_name: EGO_CONFIG.siteName,
+    max_file_size_mb: 10
+  };
+}
+
+/* ============================================================
+   SIGNALEMENT DE CONTENU
+   ============================================================ */
+
+async function reportContent({ targetType, targetUserId, targetMessageId, reason, details } = {}) {
+  // Stocke localement pour que l'admin puisse voir les signalements
+  await _idbPut('notifications', {
+    id: _uuid(),
+    user_id: 'system',
+    type: 'report',
+    data: JSON.stringify({ targetType, targetUserId, targetMessageId, reason, details }),
+    read: false,
+    created_at: _nowISO()
+  });
+  toast('Signalement envoyé, merci', 'success');
+}
 
 /* ============================================================
    INITIALISATION — crée un code invite admin par défaut
